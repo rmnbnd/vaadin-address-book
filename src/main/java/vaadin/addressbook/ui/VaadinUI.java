@@ -28,9 +28,6 @@ public class VaadinUI extends UI {
     private final ContactService contactService;
 
     @Autowired
-    private ContactRepository contactRepository;
-
-    @Autowired
     public VaadinUI(ContactService contactService) {
         this.contactService = contactService;
     }
@@ -45,15 +42,17 @@ public class VaadinUI extends UI {
         mainLayout.setMargin(true);
         mainLayout.setSpacing(true);
 
+        // Configure grid
         grid.setSizeFull();
-//        grid.setColumns("name", "phoneNumber", "email");
+        grid.setColumns("name", "phone", "email");
 
         // Initialize listing
         listContacts();
     }
 
     private void listContacts() {
-        grid.setContainerDataSource(new BeanItemContainer(Contact.class, contactRepository.findAll()));
+        BeanItemContainer<Contact> container = new BeanItemContainer<>(Contact.class, contactService.findAll());
+        grid.setContainerDataSource(container);
     }
 }
 

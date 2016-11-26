@@ -4,6 +4,7 @@ import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.GeneratedValue;
 import javax.persistence.Id;
+import java.util.Objects;
 
 @Entity
 public class Contact {
@@ -16,10 +17,10 @@ public class Contact {
     private String name;
 
     @Column
-    private String phoneNumber;
+    private String email;
 
     @Column
-    private String email;
+    private String phone;
 
     public Long getId() {
         return id;
@@ -37,14 +38,6 @@ public class Contact {
         this.name = name;
     }
 
-    public String getPhoneNumber() {
-        return phoneNumber;
-    }
-
-    public void setPhoneNumber(String phoneNumber) {
-        this.phoneNumber = phoneNumber;
-    }
-
     public String getEmail() {
         return email;
     }
@@ -52,4 +45,29 @@ public class Contact {
     public void setEmail(String email) {
         this.email = email;
     }
+
+    public String getPhone() {
+        return phone;
+    }
+
+    public void setPhone(String phone) {
+        this.phone = phone;
+    }
+
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (o == null || getClass() != o.getClass()) return false;
+        Contact contact = (Contact) o;
+        return Objects.equals(id, contact.id) &&
+                Objects.equals(name, contact.name) &&
+                Objects.equals(email, contact.email) &&
+                Objects.equals(phone, contact.phone);
+    }
+
+    @Override
+    public int hashCode() {
+        return Objects.hash(id, name, email, phone);
+    }
+
 }
