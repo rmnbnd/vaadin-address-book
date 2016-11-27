@@ -1,20 +1,18 @@
 package vaadin.addressbook.ui;
 
 import com.vaadin.annotations.Theme;
-import com.vaadin.data.Item;
-import com.vaadin.data.util.BeanItemContainer;
-import com.vaadin.data.util.GeneratedPropertyContainer;
-import com.vaadin.data.util.PropertyValueGenerator;
+import com.vaadin.navigator.Navigator;
 import com.vaadin.server.VaadinRequest;
 import com.vaadin.spring.annotation.SpringUI;
-import com.vaadin.ui.Grid;
+import com.vaadin.spring.navigator.SpringViewProvider;
+import com.vaadin.ui.Button;
+import com.vaadin.ui.CssLayout;
+import com.vaadin.ui.Panel;
 import com.vaadin.ui.UI;
 import com.vaadin.ui.VerticalLayout;
-import com.vaadin.ui.renderers.ButtonRenderer;
-import com.vaadin.ui.renderers.ClickableRenderer;
+import com.vaadin.ui.themes.ValoTheme;
 import org.springframework.beans.factory.annotation.Autowired;
-import vaadin.addressbook.model.Contact;
-import vaadin.addressbook.service.ContactService;
+import vaadin.addressbook.ui.view.ContactFormView;
 
 /**
  * This UI is the application entry point. A UI may either represent a browser window
@@ -27,54 +25,40 @@ import vaadin.addressbook.service.ContactService;
 @Theme("mytheme")
 public class VaadinUI extends UI {
 
-    private final ContactService contactService;
+    private final SpringViewProvider viewProvider;
 
     @Autowired
-    public VaadinUI(ContactService contactService) {
-        this.contactService = contactService;
+    public VaadinUI(SpringViewProvider viewProvider) {
+        this.viewProvider = viewProvider;
     }
 
     @Override
     protected void init(VaadinRequest request) {
-        // build grid
-        Grid grid = new Grid(getGeneratedPropertyContainer());
-        grid.setSizeFull();
-        grid.setColumns("name", "phone", "email", "delete");
-        grid.getColumn("delete")
-                .setRenderer(new ButtonRenderer((ClickableRenderer.RendererClickListener) event -> {
-                    Contact contact = (Contact) event.getItemId();
-                    contactService.delete(contact.getId());
-                    grid.getContainerDataSource().removeItem(event.getItemId());
-                }));
+        VerticalLayout root = new VerticalLayout();
+        root.setSizeFull();
+        root.setMargin(true);
+        root.setSpacing(true);
+        setContent(root);
 
-        // build layout
-        VerticalLayout mainLayout = new VerticalLayout(grid);
-        setContent(mainLayout);
+        CssLayout navigationBar = new CssLayout();
+        navigationBar.addStyleName(ValoTheme.LAYOUT_COMPONENT_GROUP);
+        navigationBar.addComponent(createNavigationButton("Add contact", ContactFormView.VIEW_NAME));
+        root.addComponent(navigationBar);
 
-        // Configure layouts and components
-        mainLayout.setMargin(true);
-        mainLayout.setSpacing(true);
+        Panel viewContainer = new Panel();
+        viewContainer.setSizeFull();
+        root.addComponent(viewContainer);
+        root.setExpandRatio(viewContainer, 1.0f);
+
+        Navigator navigator = new Navigator(this, viewContainer);
+        navigator.addProvider(viewProvider);
     }
 
-    private GeneratedPropertyContainer getGeneratedPropertyContainer() {
-        BeanItemContainer<Contact> container = new BeanItemContainer<>(Contact.class, contactService.findAll());
-
-        GeneratedPropertyContainer gpc = new GeneratedPropertyContainer(container);
-        gpc.addGeneratedProperty("delete",
-                new PropertyValueGenerator<String>() {
-
-                    @Override
-                    public String getValue(Item item, Object itemId,
-                                           Object propertyId) {
-                        return "Delete";
-                    }
-
-                    @Override
-                    public Class<String> getType() {
-                        return String.class;
-                    }
-                });
-        return gpc;
+    private Button createNavigationButton(String caption, final String viewName) {
+        Button button = new Button(caption);
+        button.addStyleName(ValoTheme.BUTTON_SMALL);
+        button.addClickListener(event -> getUI().getNavigator().navigateTo(viewName));
+        return button;
     }
 
 }
