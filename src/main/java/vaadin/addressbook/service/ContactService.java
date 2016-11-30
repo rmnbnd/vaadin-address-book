@@ -24,6 +24,10 @@ public class ContactService {
                 .collect(Collectors.toList());
     }
 
+    public Contact save(Contact contact) {
+        return contactRepository.save(contact);
+    }
+
     public void delete(Long id) {
         contactRepository.delete(id);
     }

@@ -14,13 +14,13 @@ public class Contact {
     private Long id;
 
     @Column
-    private String name;
+    private String name = "";
 
     @Column
-    private String email;
+    private String email = "";
 
     @Column
-    private String phone;
+    private String phone = "";
 
     public Long getId() {
         return id;
