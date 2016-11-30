@@ -24,6 +24,10 @@ public class ContactService {
                 .collect(Collectors.toList());
     }
 
+    public Contact findById(String id) {
+        return contactRepository.findOne(Long.valueOf(id));
+    }
+
     public Contact save(Contact contact) {
         return contactRepository.save(contact);
     }

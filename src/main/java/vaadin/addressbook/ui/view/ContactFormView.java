@@ -12,6 +12,7 @@ import com.vaadin.ui.TextField;
 import com.vaadin.ui.VerticalLayout;
 import com.vaadin.ui.themes.ValoTheme;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.util.StringUtils;
 import vaadin.addressbook.model.Contact;
 import vaadin.addressbook.service.ContactService;
 
@@ -56,7 +57,11 @@ public class ContactFormView extends VerticalLayout implements View {
 
     @Override
     public void enter(ViewChangeListener.ViewChangeEvent event) {
-        contact = new Contact();
+        if (StringUtils.isEmpty(event.getParameters())) {
+            contact = new Contact();
+        } else {
+            contact = contactService.findById(event.getParameters());
+        }
         BeanFieldGroup.bindFieldsUnbuffered(contact, this);
     }
 

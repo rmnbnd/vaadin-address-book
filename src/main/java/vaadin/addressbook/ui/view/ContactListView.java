@@ -33,13 +33,19 @@ public class ContactListView extends VerticalLayout implements View {
     void init() {
         Grid grid = new Grid(getGeneratedPropertyContainer());
         grid.setSizeFull();
-        grid.setColumns("name", "phone", "email", "delete");
+        grid.setColumns("name", "phone", "email", "delete", "edit");
         grid.getColumn("delete")
                 .setRenderer(new ButtonRenderer((ClickableRenderer.RendererClickListener) event -> {
                     Contact contact = (Contact) event.getItemId();
                     contactService.delete(contact.getId());
                     grid.getContainerDataSource().removeItem(event.getItemId());
                 }));
+        grid.getColumn("edit")
+                .setRenderer(new ButtonRenderer((ClickableRenderer.RendererClickListener) event -> {
+                    Contact contact = (Contact) event.getItemId();
+                    getUI().getNavigator().navigateTo(ContactFormView.VIEW_NAME + "/" + contact.getId());
+                }));
+
 
         // build layout
         addComponent(grid);
@@ -59,6 +65,19 @@ public class ContactListView extends VerticalLayout implements View {
                     @Override
                     public String getValue(Item item, Object itemId, Object propertyId) {
                         return "Delete";
+                    }
+
+                    @Override
+                    public Class<String> getType() {
+                        return String.class;
+                    }
+                });
+        gpc.addGeneratedProperty("edit",
+                new PropertyValueGenerator<String>() {
+
+                    @Override
+                    public String getValue(Item item, Object itemId, Object propertyId) {
+                        return "Edit";
                     }
 
                     @Override
